@@ -72,20 +72,38 @@ while(cur_cell.value != None):
 		driver.switch_to.window(driver.window_handles[1])
 		try:
 			WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.ID, "evnt_table")))
+			WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.ID, "dsp_table")))
+			disp_table = driver.find_element_by_id("dsp_table")
 			event_table = driver.find_element_by_id("evnt_table")
 			print("found event table!")
 			#event table loaded, now grab the date of hearing
 			#wow holy shit this works!!
-			event_date = driver.find_element_by_xpath('//*[@id="evnt_table"]/tbody/tr[2]/td[2]')
-			#store the date as text in a handy variable
-			event_text_date = event_date.text
-			#add the date to our spreadsheet in the right column!
-			write_cell = cur_sheet.cell(row = cur_row, column = cur_col+1) 
-			write_cell.value = event_text_date
+			dispo = driver.find_element_by_xpath('//*[@id="dsp_table"]/tbody/tr[2]/td[1]')
+			if dispo.text == "CLOSED":
+				print("CLOSED status: fetching reason")
+				dispo_data = driver.find_element_by_xpath('//*[@id="dsp_table"]/tbody/tr[2]/td[3]')
+				write_cell = cur_sheet.cell(row = cur_row, column = cur_col+1) 
+				write_cell.value = dispo_data.text
+				
+			else:
+				print(dispo.text)
+				event_date = driver.find_element_by_xpath('//*[@id="evnt_table"]/tbody/tr[2]/td[2]')
+				#store the date as text in a handy variable
+				event_text_date = event_date.text
+				#add the date to our spreadsheet in the right column!
+				write_cell = cur_sheet.cell(row = cur_row, column = cur_col+1) 
+				write_cell.value = event_text_date
 			
 			
 		except TimeoutException:
 			print("Could not find event table with date")
+			disp_table = driver.find_element_by_id("dsp_table")
+			dispo = driver.find_element_by_xpath('//*[@id="dsp_table"]/tbody/tr[2]/td[1]')
+			if dispo.text == "CLOSED":
+				print("CLOSED status: fetching reason")
+				dispo_data = driver.find_element_by_xpath('//*[@id="dsp_table"]/tbody/tr[2]/td[3]')
+				write_cell = cur_sheet.cell(row = cur_row, column = cur_col+1) 
+				write_cell.value = dispo_data.text
 			driver.quit()
 		
 		
@@ -93,9 +111,7 @@ while(cur_cell.value != None):
 	except TimeoutException:
 		print("Could not load webpage")
 		driver.quit()
-	#write in a value in the next column, same row
-	#write_value = cur_sheet.cell(row = cur_row, column = cur_col+1)
-	#write_value.value = "DSA"
+		
 	cur_row += 1
 	cur_cell = cur_sheet.cell(row = cur_row, column = cur_col)
 	driver.quit()
