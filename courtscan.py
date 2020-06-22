@@ -61,7 +61,7 @@ while(cur_cell.value != None):
 		search_button = driver.find_element_by_id("search_button_1")
 		search_button.click()
 		#click view button 
-		print("waiting 3 seconds") #explicit wait not seeming to work... try just forcing script to wait for 10 seconds
+		print("waiting 3 seconds") #force script to wait seems to allow all elements to load sufficiently
 		time.sleep(3)
 		#print("waiting done")
 		view_button = driver.find_element_by_xpath("//input[@value='View']")
