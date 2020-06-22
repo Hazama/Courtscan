@@ -101,10 +101,10 @@ while(cur_cell.value != None):
 	driver.quit()
 ###end loop
 
-print("Data entry finished")
+print("Saving data")
 driver.quit()
 court_file.save(file_name)
 court_file.close()
-
+print("Data entry finished")
 
 #Now all the court dates are in the appripriate column next to the associated court case number. You can copy/paste from your personal excel file into the google docs one. 
