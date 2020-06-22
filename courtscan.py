@@ -6,6 +6,7 @@ What you need to get this working:
 3. Use Pip to install the following packages: openpyxl, beautifulsoup4, requests, selenium
 4. Microsoft Excel or LibreOffice/OpenOffice
 5. Google Chrome (latest version, 83)
+6. ChromeDriver
 
 After this is all ready, set up your excel file. I named mine testcourt.xlsx
 Go to our web based excel sheet and copy the court case numbers into the first column
