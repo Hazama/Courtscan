@@ -61,13 +61,13 @@ while(cur_cell.value != None):
 		search_button = driver.find_element_by_id("search_button_1")
 		search_button.click()
 		#click view button 
-		print("waiting 3 seconds") #force script to wait seems to allow all elements to load sufficiently
+		#print("waiting 3 seconds") #force script to wait seems to allow all elements to load sufficiently
 		time.sleep(3)
 		#print("waiting done")
 		view_button = driver.find_element_by_xpath("//input[@value='View']")
-		print("Clicking view button")
+		#print("Clicking view button")
 		view_button.click()
-		print("View Button clicked")
+		#print("View Button clicked")
 		#switch to new tab opened
 		driver.switch_to.window(driver.window_handles[1])
 		try:
@@ -75,7 +75,6 @@ while(cur_cell.value != None):
 			WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.ID, "dsp_table")))
 			disp_table = driver.find_element_by_id("dsp_table")
 			event_table = driver.find_element_by_id("evnt_table")
-			print("found event table!")
 			#event table loaded, now grab the date of hearing
 			#wow holy shit this works!!
 			dispo = driver.find_element_by_xpath('//*[@id="dsp_table"]/tbody/tr[2]/td[1]')
@@ -86,7 +85,8 @@ while(cur_cell.value != None):
 				write_cell.value = dispo_data.text
 				
 			else:
-				print(dispo.text)
+				#print(dispo.text)
+				print("Found event table. Fetching hearing date.")
 				event_date = driver.find_element_by_xpath('//*[@id="evnt_table"]/tbody/tr[2]/td[2]')
 				#store the date as text in a handy variable
 				event_text_date = event_date.text
