@@ -33,7 +33,7 @@ file_name = 'testcourt.xlsx'
 base_url = 'http://www.fcmcclerk.com/case/search'
 second_url = 'http://www.fcmcclerk.com/case/view'
 webpage = requests.get(base_url)
-timeout = 30 
+timeout = 10 
 
 ####open file and get ready to traverse 
 court_file = openpyxl.load_workbook(file_name)
@@ -93,6 +93,21 @@ while(cur_cell.value != None):
 				#add the date to our spreadsheet in the right column!
 				write_cell = cur_sheet.cell(row = cur_row, column = cur_col+1) 
 				write_cell.value = event_text_date
+				print("Attempting to fetch defendant address.")
+				#check to make sure defendant is listed where we think it should be
+				is_defendant = driver.find_element_by_xpath('//*[@id="pty_table"]/tbody/tr[5]/td[5]')
+				#defendant is listed in expected place
+				if is_defendant.text == "DEFENDANT": 
+					def_address = driver.find_element_by_xpath('//*[@id="pty_table"]/tbody/tr[6]/td[2]')
+					#if an address is listed for the defendant
+					if(def_address):
+						def_city = driver.find_element_by_xpath('//*[@id="pty_table"]/tbody/tr[7]/td[2]')
+						def_zip = driver.find_element_by_xpath('//*[@id="pty_table"]/tbody/tr[7]/td[4]')
+						write_cell = cur_sheet.cell(row = cur_row, column = cur_col+2)
+						write_cell.value = def_address.text + " " + def_city.text + " " + def_zip.text 
+					else:
+						print("Defendant address not found.")
+				
 			
 			
 		except TimeoutException:
@@ -117,10 +132,10 @@ while(cur_cell.value != None):
 	driver.quit()
 ###end loop
 
-print("Saving data. Do not open excel file or close program")
+print("Saving data")
 driver.quit()
 court_file.save(file_name)
 court_file.close()
-print("Data entry finished. You may now close the program and open the excel file.")
+print("Data entry finished")
 
 #Now all the court dates are in the appripriate column next to the associated court case number. You can copy/paste from your personal excel file into the google docs one. 
