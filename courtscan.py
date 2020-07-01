@@ -1,7 +1,7 @@
 """
 What you need to get this working:
 
-1. Python 3 
+1. Python 3
 2. Pip 
 3. Use Pip to install the following packages: openpyxl, beautifulsoup4, requests, selenium
 4. Microsoft Excel or LibreOffice/OpenOffice
