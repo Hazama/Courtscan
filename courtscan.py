@@ -1,7 +1,7 @@
 """
 What you need to get this working:
 
-1. Python 3
+1. Python 3 
 2. Pip 
 3. Use Pip to install the following packages: openpyxl, beautifulsoup4, requests, selenium
 4. Microsoft Excel or LibreOffice/OpenOffice
@@ -95,30 +95,42 @@ while(cur_cell.value != None):
 				write_cell.value = event_text_date
 				print("Attempting to fetch defendant address.")
 				#check to make sure defendant is listed where we think it should be
-				is_defendant = driver.find_element_by_xpath('//*[@id="pty_table"]/tbody/tr[5]/td[5]')
-				#defendant is listed in expected place
-				if is_defendant.text == "DEFENDANT": 
-					def_address = driver.find_element_by_xpath('//*[@id="pty_table"]/tbody/tr[6]/td[2]')
+				try:
+					WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((By.XPATH, '//*[@id="pty_table"]/tbody/tr[5]/td[5]')))
+					is_defendant = driver.find_element_by_xpath('//*[@id="pty_table"]/tbody/tr[5]/td[5]')
+					#defendant is listed in expected place
+					if is_defendant.text == "DEFENDANT": 
+						def_address = driver.find_element_by_xpath('//*[@id="pty_table"]/tbody/tr[6]/td[2]')
 					#if an address is listed for the defendant
-					if(def_address):
-						def_city = driver.find_element_by_xpath('//*[@id="pty_table"]/tbody/tr[7]/td[2]')
-						def_zip = driver.find_element_by_xpath('//*[@id="pty_table"]/tbody/tr[7]/td[4]')
-						write_cell = cur_sheet.cell(row = cur_row, column = cur_col+2)
-						write_cell.value = def_address.text + " " + def_city.text + " " + def_zip.text 
-					else:
-						print("Defendant address not found.")
-				
+						if(def_address):
+							def_city = driver.find_element_by_xpath('//*[@id="pty_table"]/tbody/tr[7]/td[2]')
+							def_zip = driver.find_element_by_xpath('//*[@id="pty_table"]/tbody/tr[7]/td[4]')
+							write_cell = cur_sheet.cell(row = cur_row, column = cur_col+2)
+							write_cell.value = def_address.text + " " + def_city.text + " " + def_zip.text 
+						else:
+							print("Defendant address not found.")
+				except TimeoutException:
+					print("Could not find address")
+					court_file.save(file_name)
+					driver.quit()
 			
 			
 		except TimeoutException:
 			print("Could not find event table with date")
-			disp_table = driver.find_element_by_id("dsp_table")
-			dispo = driver.find_element_by_xpath('//*[@id="dsp_table"]/tbody/tr[2]/td[1]')
-			if dispo.text == "CLOSED":
-				print("CLOSED status: fetching reason")
-				dispo_data = driver.find_element_by_xpath('//*[@id="dsp_table"]/tbody/tr[2]/td[3]')
+			try:
+				disp_table = driver.find_element_by_id("dsp_table")
+				dispo = driver.find_element_by_xpath('//*[@id="dsp_table"]/tbody/tr[2]/td[1]')
+				if dispo.text == "CLOSED":
+					print("CLOSED status: fetching reason")
+					dispo_data = driver.find_element_by_xpath('//*[@id="dsp_table"]/tbody/tr[2]/td[3]')
+					write_cell = cur_sheet.cell(row = cur_row, column = cur_col+1) 
+					write_cell.value = dispo_data.text
+			except: 
+				print("ERROR")
 				write_cell = cur_sheet.cell(row = cur_row, column = cur_col+1) 
-				write_cell.value = dispo_data.text
+				write_cell.value = "ERROR"
+				court_file.save(file_name)
+				
 			driver.quit()
 		
 		
@@ -129,6 +141,7 @@ while(cur_cell.value != None):
 		
 	cur_row += 1
 	cur_cell = cur_sheet.cell(row = cur_row, column = cur_col)
+	court_file.save(file_name)
 	driver.quit()
 ###end loop
 
